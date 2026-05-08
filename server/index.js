@@ -9,11 +9,7 @@ const bookingRoutes = require('./routes/booking.js');
 dotenv.config();
 
 const app = express();
-// app.use(cors());
-app.use(cors({
-    origin: 'https://eventora-frontend-1izu.onrender.com',
-    credentials: true
-}));
+app.use(cors());
 
 app.use(express.json());
 
