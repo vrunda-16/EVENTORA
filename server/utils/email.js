@@ -47,7 +47,7 @@ const sendBookingEmail = async (userEmail, userName, eventTitle) => {
     }
 };
 
-const sendOtpEmail = async (userEmail, otp, type) => {
+const sendOTPEmail = async (userEmail, otp, type) => {
     try{
        const title =
         type === 'account_verification'
@@ -106,5 +106,5 @@ const sendOtpEmail = async (userEmail, otp, type) => {
 
 module.exports = {
     sendBookingEmail,
-    sendOtpEmail
+    sendOTPEmail
 };

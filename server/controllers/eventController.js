@@ -34,47 +34,59 @@ exports.getEventById = async (req, res) => {
 
 // Create New Event (Admin Only)
 exports.createEvent = async (req, res) => {
-    const { title, description, date, location, category, ticketPrice } = req.body;
     try {
+        const { title, description, date, location, category, totalSeats, ticketPrice, imageUrl } = req.body;
         const event = await Event.create({
             title,
             description,
             date,
             location,
             category,
-            totalSeats, // Default available seats
-            ticketPrice,  
-            imageUrl,
+            totalSeats,
+            availableSeats: totalSeats,
+            ticketPrice: ticketPrice || 0,
+            imageUrl: imageUrl || '',
+            createdBy: req.user.id
         });
         res.status(201).json(event);
     } catch (error) {
-        res.status(400).json({ message: error.message });
-    }   
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
 };
 
 // Update Event (Admin Only)
 exports.updateEvent = async (req, res) => {
-    const { title, description, date, location, category, ticketPrice } = req.body;
-    try {
-        const event = await Event.findByIdAndUpdate(req.params.id, {
-            title,
-            description,
-            date,
-            location,
-            category,
-            totalSeats,
-            ticketPrice,
-            imageUrl
-        }, { new: true });
-        if (!event) {
-            return res.status(404).json({ message: 'Event not found' });
+        try {
+            const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
+            if (!event) return res.status(404).json({ message: 'Event not found' });
+            res.json(event);
+        } catch (error) {
+            res.status(500).json({ message: 'Server Error', error: error.message });
         }
-        res.json(event);
-    }
-    catch (error) {
-        res.status(400).json({ message: error.message });
-    }
 };
+
+// exports.updateEvent = async (req, res) => {
+//     const { title, description, date, location, category, totalSeats, ticketPrice, imageUrl } = req.body;
+//     try {
+//         const event = await Event.findByIdAndUpdate(req.params.id, {
+//             title,
+//             description,
+//             date,
+//             location,
+//             category,
+//             totalSeats,
+//             ticketPrice,
+//             imageUrl
+//         }, { new: true });
+//         if (!event) {
+//             return res.status(404).json({ message: 'Event not found' });
+//         }
+//         res.json(event);
+//     }
+//     catch (error) {
+//         res.status(400).json({ message: error.message });
+//     }
+// };
 
 // Delete Event (Admin Only)
 exports.deleteEvent = async (req, res) => {
