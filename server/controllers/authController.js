@@ -2,7 +2,7 @@ const User = require('../models/User');
 const OTP = require('../models/OTP');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { sendOtpEmail } = require('../utils/email');
+const { sendOTPEmail } = require('../utils/email');
 
 const generateToken = (id , role) => {
     return jwt.sign({ id, role }, process.env.JWT_SECRET, {
@@ -29,7 +29,7 @@ exports.registerUser = async (req, res) => {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         console.log(`OTP for ${email}: ${otp}`);
         await OTP.create({ email, otp, action: 'account_verification' });
-        await sendOtpEmail(email, otp, 'account_verification');
+        await sendOTPEmail(email, otp, 'account_verification');
 
         res.status(201).json({ 
             message: 'User registered successfully. Please check your email for OTP to verify your account.',
@@ -61,7 +61,7 @@ exports.loginUser = async (req, res) => {
         await OTP.deleteMany({ email, action: 'account_verification' }); // Remove old OTPs for this email
 
         await OTP.create({ email, otp, action: 'account_verification' });
-        await sendOtpEmail(email, otp, 'account_verification');
+        await sendOTPEmail(email, otp, 'account_verification');
 
         return res.status(400).json({
             error: 'Account not verified. A new OTP has been sent to your email for verification.'
